@@ -1,0 +1,27 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require_tree .
+ */
+ .black_overlay {  
+} 
+
+  .white_content {  
+  border: 5px solid #ccc;
+  display: none; 
+  position: absolute;  
+  top: 16%;  left: 10%;  
+  width: 80%;  height: 60%; 
+  padding: 16px; 
+  /*border:solid #00702E 7px; */
+  background-color: white; 
+  z-index:1002; 
+  overflow: auto;  }  

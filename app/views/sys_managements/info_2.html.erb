@@ -1,0 +1,25 @@
+<div style="float:left;width:200px">
+
+	<% @departments.each{|d| %>
+		<div style="padding:2px;"><%= link_to d.name, '#', :id=>"document-"+d.id %></div>
+		<% d.employees.each{|e| %>
+			<div style="padding-left:20px">
+			<% if e.class == Admin %>
+				★<%= link_to e.name, '#',:id=>"master"+e.id %>
+			<% else %>
+				<%= link_to e.name, '#' ,:id=>"master"+e.id %>
+			<% end %>
+			</div>
+		<% } %>
+	<% } %>
+</div>
+<div style="float:left; border-left:1px dotted #999; width:600px; height:600px; padding-left:20px;">
+	<iframe id="ifr" src="/"></iframe>
+
+</div>
+<div style="clear:left"></div>
+<script type="text/javascript">
+	$(document).ready(function(){
+
+	})
+</script>

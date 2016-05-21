@@ -1,0 +1,18 @@
+<% provide(:title, "Sign in") %>
+<h1>登录</h1>
+<div>
+<%= form_for(:session, url: sessions_path) do |f| %>
+	<div class="form-group">
+		<%= f.label :mobile, :class => 'control-label col-lg-2' %>
+		<%= f.text_field :mobile, :class => 'form-control' %>
+	</div>
+	 <div class="form-group">
+		<%= f.label :password, :class => 'control-label col-lg-2' %>
+		<%= f.password_field :password, :class => 'form-control'%>
+	</div>
+	<div class="form-group">
+		<%= f.submit "Sign in", class: "btn btn-large btn-primary" %>
+	</div>
+<% end %>
+
+</div>

@@ -1,0 +1,39 @@
+<%- model_class = Employee -%>
+<div class="page-header">
+  <h1>人员管理</h1>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <!-- <th><%= model_class.human_attribute_name(:id) %></th> -->
+      <th><%= model_class.human_attribute_name(:name) %></th>
+      <th><%= model_class.human_attribute_name(:mobile) %></th>
+      <th style="display:none"><%= model_class.human_attribute_name(:department_id) %></th>
+      <th>部门</th>
+      <th><%= model_class.human_attribute_name(:type) %></th>  
+      <th><%=t '.actions', :default => t("helpers.actions") %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @employees.each do |employee| %>
+      <tr>
+        <!-- <td><%=employee.id %></td> -->
+        <td><%= employee.name %></td>
+        <td><%= employee.mobile %></td>
+        <td style="display:none"><%= employee.department_id %></td>
+        <td><%= Department.select('name').where('id=?',employee.department_id)[0]["name"]%></td>
+        <td><%= employee.type %></td>
+        <td>
+           <!-- <input type="button"  value="edit" class="1" ></input> -->
+          <%= link_to t('.edit', :default => t("helpers.links.edit")),
+                      edit_employee_path(employee), :class => 'btn btn-warning btn-xs' %>
+          
+        </td>
+      </tr>      
+    <% end %>
+  </tbody>
+ 
+  
+</table>
+ <p><%=link_to "添加新用户", '/sys/signup' ,:class=>"btn btn-large btn-info" %></p>
+

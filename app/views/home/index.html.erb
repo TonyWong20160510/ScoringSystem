@@ -1,0 +1,59 @@
+<div class="center hero-unit">
+<% provide(:title,'Home') %>
+
+<h1>评分标准</h1>
+<table class="table">
+  <tr>
+    <th>合作协助方面评分</th>
+    <th>满分</th>
+  </tr>
+  <tr>
+    <td>1.对我工作的了解熟悉度</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>2.愿意倾听我的需求</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>3.协商或者协助我工作的积极性</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>4.合作或协助过程中按计划的完成率</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>5.合作或者协助过程中的工作完成质量</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <th>工作能能力方面评分</th>
+    <th></th>
+  </tr>
+  <tr>
+    <td>6.我感到其专业能力比以前提升了</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>7.按照时间计划完成工作的比例</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>8.按照岗位职责解决问题的能力</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>9.上个月内重复出现工作错误的比例</td>
+    <td>10分</td>
+  </tr>
+  <tr>
+    <td>10.其工作中表现出的创新行为或贡献</td>
+    <td>10分</td>
+  </tr>
+</table>
+<% unless @current_employee %>
+  <div><%= link_to "登录系统", signin_path, class: "btn btn-large btn-primary" %></div>
+<% end %>
+</div>
+

@@ -1,0 +1,196 @@
+<% provide(:title, "Mark") %>
+<h1>评分系统</h1>
+<div>
+	<div id="scorelist">
+	<% for f in @departmentlist %>
+	
+		<label><%= f[1] %></label>
+		<div class="form-group">	
+			<label class="">部门得分:</label>
+			<div>
+				<!-- <input id="departmentId-1" class="form-control" type="text" size="30" value="<%= f[0] %>" style="display:none"> -->
+				<!-- <input id="departmentId-<%= f[0] %>" class="form-control" type="text" size="30">	 -->
+				<select id="departmentId-<%= f[0] %>" class="form-control" >
+					<option>100</option>
+					<option>95</option>
+					<option>90</option>
+					<option>85</option>
+					<option>80</option>
+					<option>75</option>
+					<option>70</option>
+					<option>65</option>
+					<option>60</option>
+					<option>55</option>
+					<option>50</option>
+					<option>45</option>
+					<option>40</option>
+					<option>35</option>
+					<option>30</option>
+					<option>25</option>
+					<option>20</option>
+					<option>15</option>
+					<option>10</option>
+					<option>5</option>
+					<option>0</option>		
+				</select>
+			</div>
+		</div>
+		<% for i in @masterlist %>
+			<% if i[2] == f[0] %>
+			<div class="form-group">
+				<label><%= i[1]%></label><!--主管姓名列表-->
+				<div>
+					<!-- <input id="masterId-" class="form-control" type="text" size="30" value="<%= i[0] %>" style="display:none"> -->
+					<!-- <input id="masterId-<%= i[0] %>" class="form-control" type="text" size="30" > -->
+					<select id="masterId-<%= i[0] %>" class="form-control" > 
+						<option>100</option>
+						<option>95</option>
+						<option>90</option>
+						<option>85</option>
+						<option>80</option>
+						<option>75</option>
+						<option>70</option>
+						<option>65</option>
+						<option>60</option>
+						<option>55</option>
+						<option>50</option>
+						<option>45</option>
+						<option>40</option>
+						<option>35</option>
+						<option>30</option>
+						<option>25</option>
+						<option>20</option>
+						<option>15</option>
+						<option>10</option>
+						<option>5</option>
+						<option>0</option>		
+					</select>
+				</div>			
+			</div>
+			<% end %>
+		<% end %>
+		<hr>	
+	
+	<% end %>
+	</div>
+	<input id="submitMarks" type="button" class="btn btn-large btn-primary" value="提交分数">
+	<input id="getMarks" type="button" class="btn btn-large btn-info" value="查看本部门得分">
+	<!-- <input id="clearMarks" type="button" class="btn btn-danger btn-primary" value="清空分数"> -->
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		var depart=<%= Employee.find_by_sql("select department_id from employees where id=#{@current_employee["id"]}")[0]["department_id"] %>;
+		// alert(depart);
+		document.getElementById("departmentId-"+depart).value=100;
+		document.getElementById("departmentId-"+depart). disabled="disabled";
+		<% @test=Employee.select('id').where('type="Master" and id=?',@current_employee["id"]) %>
+		<% if @test.count>0 %>
+		var master=<%= @test[0]["id"] %>
+		// master=master[0]["id"]
+		document.getElementById("masterId-"+master).value=100;
+		document.getElementById("masterId-"+master). disabled="disabled";
+		<% end %>
+	})
+
+
+
+	$("#submitMarks").click(function(){
+		var jsonArr=new Array();
+		var scores=new Array();
+		// var mScore=new Array();
+		// var dScore=new Array();		
+		var count=document.getElementById("scorelist").getElementsByTagName("select").length;
+		var input_lists=document.getElementById("scorelist").getElementsByTagName("select")
+		// alert(input_lists[0].id)
+		var isflag=true;//标记用户填写的数据格式是否正确
+		for(var i=0;i<count;i++)
+		{
+			if( (input_lists[i].id).indexOf("aster")>0 )
+			{
+				jsonArr[i]={
+				"master_id":input_lists[i].id.replace(/[^0-9]+/g, ''),
+				"employee_id":"<%= @current_employee["id"] %>",
+				"department_id":"",
+				"term_phase":getPhase(),
+				"score":input_lists[i].value,				
+				}
+			}
+			else
+			{
+				jsonArr[i]={
+				"master_id":"",
+				"employee_id":"<%= @current_employee["id"] %>",
+				"department_id":input_lists[i].id.replace(/[^0-9]+/g, ''),
+				"term_phase":getPhase(),
+				"score":input_lists[i].value,				
+				}
+			}
+		}
+		if(isflag)
+		{
+			var jsonData=JSON.stringify(jsonArr);
+			// alert(jsonData);
+			$.ajax({
+				url:'/mark/submit',
+				type:'post',
+				data: {jsonData: jsonData},
+				dataType:'html',
+				ContentType:"text/html",
+				success: function(xhr){
+					if(xhr.indexOf("html")>0)
+					{
+						alert("提交成功");
+					}
+					else
+						alert("您已经提交过评分");
+				},
+				error: function(xhr){
+					alert("error");
+				}
+
+			})
+		}
+		
+		// alert(JSON.stringify(jsonArr));
+	})
+	
+	$("#getMarks").click(function(){
+
+		$.ajax({
+			url: '/mark/score',
+			type:'post',
+			dataType: 'json',
+			success: function(data){
+				// alert("success");
+				var score=eval("("+data["score"]+")");
+				alert("当前平均分为"+score[0]["score"]+"分,已评分人数为"+score[0]["number"]+"人");
+			},
+			error: function()
+			{
+				alert("error");
+			}
+
+		})
+	})
+
+// 格式化日期，为的是得到和成绩单表中期数保持一致
+	function getPhase() {
+	    var date = new Date();
+	    var year = date.getFullYear();
+	    var month = date.getMonth() + 1;
+	    var strDate = date.getDate();
+	    if (month >= 1 && month <= 9) {
+	        month = "0" + month;
+	    }
+	    if (strDate >= 0 && strDate <= 9) {
+	        strDate = "0" + strDate;
+	    }
+	    var currentdate = year + month + strDate;
+	    return currentdate;
+	}
+
+
+</script>
+

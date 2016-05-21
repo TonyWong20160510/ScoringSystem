@@ -1,0 +1,23 @@
+<%- model_class = Employee -%>
+<div class="page-header">
+  <h1><%=t '.title', :default => model_class.model_name.human.titleize %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <dt><strong><%= model_class.human_attribute_name(:name) %>:</strong></dt>
+  <dd><%= @employee.name %></dd>
+ <!--  <dt><strong><%= model_class.human_attribute_name(:password_digest) %>:</strong></dt>
+  <dd><%= @employee.password_digest %></dd> -->
+  <dt><strong><%= model_class.human_attribute_name(:mobile) %>:</strong></dt>
+  <dd><%= @employee.mobile %></dd>
+  <!-- <dt><strong><%= model_class.human_attribute_name(:department_id) %>:</strong></dt>
+  <dd><%= @employee.department_id %></dd>  -->
+  <dt><strong>部门:</strong></dt>
+  <dd><%= Department.select('name').where('id=?',@employee.department_id)[0]['name'] %></dd> 
+
+</dl>
+
+<%= link_to t('.back', :default => t("helpers.links.back")),
+              root_path, :class => 'btn btn-default'  %>
+<%= link_to t('.edit', :default => t("helpers.links.edit")),
+              edit_employee_path(@employee), :class => 'btn btn-danger' %>
