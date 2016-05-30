@@ -1,0 +1,44 @@
+<div class="center hero-unit">
+<% provide(:title,'SysManagement') %>
+
+<h1>欢迎来到易百事内部评分系统</h1>
+
+<div>	
+	<input type="button" class="btn btn-large btn-success" id="opensystem" value="创建新记录">
+	<input type="button" class="btn btn-large btn-info" id="result" value="查看结果" onclick="javascript:window.location.href='/sys/result'">
+	<script type="text/javascript">
+	$("#opensystem").click(function(){
+		$.ajax({
+		url: '/sys/new',
+		type: 'post',
+		dataType: 'json',
+		success: function(xhr){
+			if(xhr["message"])
+				alert(xhr["message"])
+			else
+				alert("创建成功！");
+		},
+		error: function(){
+			alert("创建失败！");
+		}
+	  })
+	})
+
+
+	// $("#getresult").click(function(){
+	// 	$.ajax({
+	// 		url: 'sys/result',
+	// 		type: 'post',
+	// 		dataType: 'json',
+	// 		success: function(xhr){
+	// 			alert(xhr["depart"]["1"]);
+	// 			alert("success");
+	// 		},
+	// 		error: function(xhr){
+	// 			alert("error");
+	// 		}
+
+	// 	})
+	// })
+	</script>
+</div>
