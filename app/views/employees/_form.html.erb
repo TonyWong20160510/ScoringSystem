@@ -1,0 +1,126 @@
+<%= form_for @employee, :html => { :class => "form-horizontal employee" } do |f| %>
+
+  <% if @employee.errors.any? %>
+    <div id="error_expl" class="panel panel-danger">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= pluralize(@employee.errors.count, "error") %> prohibited this employee from being saved:</h3>
+      </div>
+      <div class="panel-body">
+        <ul>
+        <% @employee.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label "姓名", :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :name, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:name) %>
+  </div>
+  <div class="form-group">
+    <%= f.label "密码", :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.password_field :password, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:password) %>
+  </div>
+   <div class="form-group">
+    <%= f.label "密码确认", :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.password_field :password_confirmation, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:password_confirmation) %>
+  </div>
+  <div class="form-group">
+    <%= f.label "手机", :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.number_field :mobile, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:mobile) %>
+  </div>
+  <div class="form-group" style="display:none">
+    <%= f.label "部门id", :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">      
+      <input class="form-control" id="department_id" name="employee[department_id]" type="number" value="">
+      <input>
+    </div>
+    <%=f.error_span(:department_id) %>
+  </div>
+  <div class="form-group" >
+    <%= f.label "部门", :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+     <select id="sel_departName" class="form-control" onblur="setid()">
+       <option>技术部</option>
+       <option>新媒体部</option>
+       <option>招商部</option>       
+       <option>管理部</option>
+       <option>财务部</option>    
+       <option>库房部</option>
+       <option>运营部</option>
+     </select>
+    </div>
+    <%=f.error_span(:department_id) %>
+  </div>
+
+  <div class="form-group" style="display:none">
+    <%= f.label "用户类型", :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :typename, :class => 'form-control' ,:value => '' %>
+    </div>
+    <%=f.error_span(:type) %>
+  </div>
+  <!-- <div class="form-group">
+    <%= f.label :remember_token, :class => 'control-label col-lg-2' %>
+    <div class="col-lg-10">
+      <%= f.text_field :remember_token, :class => 'form-control' %>
+    </div>
+    <%=f.error_span(:remember_token) %>
+  </div> -->
+  <div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+      <%= f.submit nil, :class => 'btn btn-primary' ,:id => 'btn_signup' %>
+      <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+                employees_path, :class => 'btn btn-default' %>
+    </div>
+  </div>
+
+<% end %>
+ <script type="text/javascript">
+   function setid(){
+      var departname = document.getElementById("sel_departName").value
+      // var departid=document.getElementById("department_id").value
+      switch(departname){
+        case "技术部":
+          document.getElementById("department_id").value=1;
+          break;
+        case "新媒体部":
+          document.getElementById("department_id").value=2;
+          break;
+        case "招商部":
+          document.getElementById("department_id").value=3;
+          break;
+        case "管理部":
+          document.getElementById("department_id").value=4;
+          break;
+        case "财务部":
+          document.getElementById("department_id").value=5;
+          break;
+        case "库房部":
+          document.getElementById("department_id").value=6;
+          break;
+        case "运营部":
+          document.getElementById("department_id").value=7;
+          break;   
+        default:
+          document.getElementById("department_id").value=1;
+          break; 
+      }
+      // alert(document.getElementById("department_id").value);
+   }
+  
+  </script>

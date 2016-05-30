@@ -1,0 +1,149 @@
+<% provide(:title, "Mark") %>
+<h1>评分系统</h1>
+<div>
+<% for f in @departmentlist %>
+<div>
+	<label><%= f[1] %></label>
+	<div class="form-group">	
+		<label class="">部门得分:</label>
+		<div>
+			<input id="departmentId-<%= f[0] %>" class="form-control" type="text" size="30" value="<%= f[0] %>" style="display:none">
+			<input id="departmentScore-<%= f[0] %>" class="form-control" type="text" size="30">			
+		</div>
+	</div>
+	<% for i in @masterlist %>
+		<% if i[2] == f[0] %>
+		<div class="form-group">
+			<label><%= i[1]%></label><!--主管姓名列表-->
+			<div>
+				<input id="masterId-<%= i[0] %>" class="form-control" type="text" size="30" value="<%= i[0] %>" style="display:none">
+				<input id="masterScore-<%= i[0] %>" class="form-control" type="text" size="30" >
+			</div>			
+		</div>
+		<% end %>
+	<% end %>
+	<hr>
+	
+</div>
+<% end %>
+<input id="submitMarks" type="button" class="btn btn-large btn-primary" value="提交分数">
+<input id="getMarks" type="button" class="btn btn-large btn-info" value="查看本部门得分">
+<!-- <input id="clearMarks" type="button" class="btn btn-danger btn-primary" value="清空分数"> -->
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		// var employee_id = <%=current_employee["id"]  %>
+		var depart=<%= Employee.find_by_sql("select department_id from employees where id=#{current_employee["id"]}")[0]["department_id"] %>;
+		// alert(depart);
+		document.getElementById("departmentScore-"+depart).value=100;
+		document.getElementById("departmentScore-"+depart). disabled="disabled";
+
+	})
+
+	$("#submitMarks").click(function(){
+		var jsonArr=new Array();
+		var mScore=new Array();
+		var dScore=new Array();
+		<% for d in @departmentlist %>	
+			<% for m in @masterlist %>
+				<% if m[2]==d[0] %>			
+				var count=<%= m[0] %>;
+				// 将每个打分项存入数组，判定各个打分项目都不能非法
+				mScore[count-1]=document.getElementById("masterScore-"+count).value;
+				dScore[count-1]=document.getElementById("departmentScore-<%= d[0] %>").value;
+
+				jsonArr[count-1]={
+					"master_id":document.getElementById("masterId-"+count).value,
+					"employee_id":"<%= current_employee["id"] %>",
+					"department_id":document.getElementById("departmentId-<%= d[0] %>").value,
+					"term_phase":getPhase(),
+					"master_score":document.getElementById("masterScore-"+count).value,
+					"department_score":document.getElementById("departmentScore-<%= d[0] %>").value
+				}
+				<% end %>			
+			<% end %>
+		<% end %>		
+		var isflag=true;//标记用户填写的数据格式是否正确
+		for (var i=0;i<count;i++)
+		{			
+			//所打分数不能为空，不能不是数字，不能超过100分,不能是负分！
+			if (mScore[i]==""||isNaN(mScore[i])||mScore[i]>100||dScore[i]<0)
+			{
+				alert("您填写的主管分数中有错误!");
+				isflag=false;
+				break;
+			}
+			if (dScore[i]==""||isNaN(dScore[i])||dScore[i]>100||dScore[i]<0)
+			{
+				alert("您填写的部门分数中有错误!");
+				isflag=false;
+				break;
+			}
+
+		}
+		if(isflag)
+		{
+			var jsonData=JSON.stringify(jsonArr);
+			// alert(jsonData);
+			$.ajax({
+				url:'/mark/submit',
+				type:'post',
+				data: {jsonData: jsonData},
+				dataType:'html',
+				ContentType:"text/html",
+				success: function(xhr){
+					if(xhr.indexOf("html")>0)
+					{
+						alert("提交成功");
+					}
+					else
+						alert("您已经提交过评分");
+				},
+				error: function(xhr){
+					alert("error");
+				}
+
+			})
+		}
+	})
+	
+	$("#getMarks").click(function(){
+
+		$.ajax({
+			url: '/mark/score',
+			type:'post',
+			dataType: 'json',
+			success: function(data){
+				// alert("success");
+				var score=eval("("+data["score"]+")");
+				alert("当前平均分为"+score[0]["score"]+"分,已评分人数为"+score[0]["number"]+"人");
+			},
+			error: function()
+			{
+				alert("error");
+			}
+
+		})
+	})
+
+// 格式化日期，为的是得到和成绩单表中期数保持一致
+	function getPhase() {
+	    var date = new Date();
+	    var year = date.getFullYear();
+	    var month = date.getMonth() + 1;
+	    var strDate = date.getDate();
+	    if (month >= 1 && month <= 9) {
+	        month = "0" + month;
+	    }
+	    if (strDate >= 0 && strDate <= 9) {
+	        strDate = "0" + strDate;
+	    }
+	    var currentdate = year + month + strDate;
+	    return currentdate;
+	}
+
+
+</script>
+
+</div>
