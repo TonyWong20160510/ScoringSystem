@@ -1,4 +1,39 @@
-ScoringSystem::Application.routes.draw do
+ScoringSystem::Application.routes.draw do  
+  resources :departments
+  resources :admins
+  resources :employees
+  resources :masters
+  resources :department_marks
+  resources :master_marks
+  resources :sessions, only: [:new, :create, :destroy]
+  root :to => 'home#index'
+  #管理
+  match '/sys' => 'SysManagements#index'
+  match '/sys/new' => 'SysManagements#new'
+  # match '/result' => 'SysManagements#result'
+  match '/sys/result' => 'SysManagements#show'
+  match '/sys/getresult' => 'SysManagements#result'
+  match '/sys/detail'=>'SysManagements#detail'
+  match '/sys/getterm'=>'SysManagements#getterm'
+  match '/sys/info'=>'SysManagements#info'
+  match '/sys/signup' => 'Employees#new'
+  match '/sys/echarts'=>'SysManagements#echarts'
+  #登录
+  # match '/signup' => 'Employees#new'
+  match '/employees/:id' => 'Employees#show'  
+  match '/masters/:id' => 'Masters#show' 
+  match '/admins/:id' => 'Admins#show'  
+  match '/signin',  to: 'Sessions#new',         via: 'get'
+  match '/signout', to: 'Sessions#destroy',     via: 'delete'
+
+  #打分
+  match '/mark' => 'Marks#index'
+  match '/mark/submit' => 'Marks#submit'
+  match '/mark/score' => 'Marks#score'
+
+  
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

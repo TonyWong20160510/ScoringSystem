@@ -1,0 +1,219 @@
+<style type="text/css">
+	.display-inline{display: inline; width: 130px;}
+</style>
+
+<% provide(:title, "Mark") %>
+<!-- <h2>评分系统</h2> -->
+
+<div>
+	<div id="scorelist">
+	<% for f in @departmentlist %>	
+		<div style="background:#ccffee; margin:10px 0;padding:10px 20px; border-radius:10px;">
+			<label style="border-bottom:1px solid #999;wdith:100%; padding:5px 0;display:block; font-size:18px"><%= f[1] %></label>
+			<div  style="padding-left: 20px">
+				<div class="form-group" id="div_departmentId-<%= f[0] %>">	
+					<label  style="font-weight:normal;font-size:14px;">部门得分:</label>
+					<select id="departmentId-<%= f[0] %>" class="form-control display-inline"  >
+						<% 0.step(100,10) {|i|%>
+							<option><%= 100-i %></option>
+						<% } %>			
+					</select>
+				</div>
+
+				<% for i in @masterlist %>
+					<% if i[2] == f[0] %>
+					<div class="form-group" id="div_masterId-<%= i[0] %>">
+						<label style="font-weight:normal;font-size:14px;"><%= i[1]%>得分:</label><!--主管姓名列表-->
+						<select id="masterId-<%= i[0] %>" class="form-control display-inline" > 
+							<% 0.step(100,10) {|i|%>
+							<option><%= 100-i %></option>
+							<% } %>		
+						</select>
+					</div>
+					<% end %>
+				<% end %>
+			</div>
+		</div>		
+	<% end %>
+	</div>
+	<input id="submitMarks" type="button" class="btn btn-large btn-primary" value="提交分数">
+	<input id="getMarks" type="button" class="btn btn-large btn-info" value="部门得分">
+	<input id="markWay" type="button" class="btn btn-large btn-warning" value="评分标准">
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		var depart=<%= Employee.find_by_sql("select department_id from employees where id=#{@current_employee["id"]}")[0]["department_id"] %>;
+		// alert(depart);
+		document.getElementById("departmentId-"+depart).value=100;
+		document.getElementById("departmentId-"+depart).disabled="disabled";
+		document.getElementById("div_departmentId-"+depart).style.display="none";
+		<% @test=Employee.select('id').where('type="Master" and id=?',@current_employee["id"]) %>
+		<% if @test.count>0 %>
+		var master=<%= @test[0]["id"] %>
+		document.getElementById("masterId-"+master).value=100;
+		document.getElementById("masterId-"+master).disabled="disabled";
+		document.getElementById("div_masterId-"+master).style.display="none";
+		<% end %>
+	})
+
+
+
+	$("#submitMarks").click(function(){
+		var jsonArr=new Array();
+		var scores=new Array();
+		var count=document.getElementById("scorelist").getElementsByTagName("select").length;
+		var input_lists=document.getElementById("scorelist").getElementsByTagName("select")		
+		var isflag=true;//标记用户填写的数据格式是否正确
+		for(var i=0;i<count;i++)
+		{
+			if( (input_lists[i].id).indexOf("aster")>0 )
+			{
+				jsonArr[i]={
+				"master_id":input_lists[i].id.replace(/[^0-9]+/g, ''),
+				"employee_id":"<%= @current_employee["id"] %>",
+				"department_id":"",
+				"term_phase":getPhase(),
+				"score":input_lists[i].value,				
+				}
+			}
+			else
+			{
+				jsonArr[i]={
+				"master_id":"",
+				"employee_id":"<%= @current_employee["id"] %>",
+				"department_id":input_lists[i].id.replace(/[^0-9]+/g, ''),
+				"term_phase":getPhase(),
+				"score":input_lists[i].value,				
+				}
+			}
+		}
+		if(isflag)
+		{
+			var jsonData=JSON.stringify(jsonArr);
+			// alert(jsonData);
+			$.ajax({
+				url:'/mark/submit',
+				type:'post',
+				data: {jsonData: jsonData},
+				dataType:'html',
+				ContentType:"text/html",
+				success: function(xhr){
+					if(xhr.indexOf("html")>0)
+					{
+						alert("提交成功");
+					}
+					else
+						alert("您已经提交过评分");
+				},
+				error: function(xhr){
+					alert("error");
+				}
+
+			})
+		}
+		
+		// alert(JSON.stringify(jsonArr));
+	})
+	
+	$("#getMarks").click(function(){
+
+		$.ajax({
+			url: '/mark/score',
+			type:'post',
+			dataType: 'json',
+			success: function(data){
+				// alert("success");
+				var score=eval("("+data["score"]+")");
+				alert("当前平均分为"+score[0]["score"]+"分,已评分人数为"+score[0]["number"]+"人");
+			},
+			error: function(data)
+			{
+				alert(data.responseText);
+			}
+
+		})
+	})
+
+// 格式化日期，为的是得到和成绩单表中期数保持一致
+	function getPhase() {
+	    var date = new Date();
+	    var year = date.getFullYear();
+	    var month = date.getMonth() + 1;
+	    var strDate = date.getDate();
+	    if (month >= 1 && month <= 9) {
+	        month = "0" + month;
+	    }
+	    if (strDate >= 0 && strDate <= 9) {
+	        strDate = "0" + strDate;
+	    }
+	    var currentdate = year + month + strDate;
+	    return currentdate;
+	}
+
+	$("#markWay").click(function(){
+		 document.getElementById('light').style.display='block';
+	     document.getElementById('fade').style.display='block';
+	})
+</script>
+
+<div id="light" class="white_content"> 
+  <div align="right">
+    <span id="span2" style="cursor:pointer" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">×</span>
+  </div>
+    <div >
+     <table class="table">
+	  <tr>
+	    <th>合作协助方面评分</th>
+	    <th>满分</th>
+	  </tr>
+	  <tr>
+	    <td>1.对我工作的了解熟悉度</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>2.愿意倾听我的需求</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>3.协商或者协助我工作的积极性</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>4.合作或协助过程中按计划的完成率</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>5.合作或者协助过程中的工作完成质量</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <th>工作能能力方面评分</th>
+	    <th></th>
+	  </tr>
+	  <tr>
+	    <td>6.我感到其专业能力比以前提升了</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>7.按照时间计划完成工作的比例</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>8.按照岗位职责解决问题的能力</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>9.上个月内重复出现工作错误的比例</td>
+	    <td>10分</td>
+	  </tr>
+	  <tr>
+	    <td>10.其工作中表现出的创新行为或贡献</td>
+	    <td>10分</td>
+	  </tr>
+	 </table>
+    </div>
+</div> 
+  <div id="fade" class="black_overlay"> </div>
+

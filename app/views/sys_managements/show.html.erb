@@ -1,0 +1,253 @@
+
+<div class="center hero-unit">
+<% provide(:title,'SysManagement-result') %>
+<div>
+	<div class="form-inline">
+		<label>选择月份</label>
+		<select id="dateSec" class="form-control"  onblur="getTerm()">
+		<option value=""></option>
+			<% for i in @termDate %>			
+			<option value="<%= i.to_s[/\d+/] %>"> 
+				<%= i.to_s[/\d+/] %> 
+			</option>
+			<% end %>
+		</select>	
+		<label>选择期数</label>
+		<select id="phaseSec" class="form-control" >
+				<option></option>	
+		</select>
+
+		<input type="button" class="btn btn-large btn-primary" id="getresault" value="确定">
+		<input type="button" class="btn btn-large btn-primary" id="getbar" value="图表" disabled="disabled">
+		 
+	</div>
+	
+</div>
+<div style="display:none" id="results" class="">
+	<!-- 当期得分结果 -->
+	<table id="depart_result" data-row-style="rowStyle" data-toggle="depart_resault" data-search="true" data-show-export="true"  data-export-types="['excel']" data-export-options='{ "fileName": "scores", 
+					       "worksheetName": "sheet1",         
+					       "jspdf": {                  
+					       "autotable": {
+					      	    "styles": { "rowHeight": 20, "fontSize": 10 },
+					            "headerStyles": { "fillColor": 255, "textColor": 0 },
+					            "alternateRowStyles": { "fillColor": [60, 69, 79], "textColor": 255 }
+					           }
+					         }
+					       }' >	 
+	  <thead>
+	    <tr>
+	        <th data-field="department">部门</th>	    
+	        <th data-field="master">评分对象</th>
+	        <th data-field="score">得分</th>	 
+	        <th data-field="operate">操作</th>	       
+	    </tr>
+      </thead>
+	</table>
+</div> 
+<div id="bar" style="width:600px;height:500px;display:none" >
+
+</div>
+
+<script type="text/javascript">
+	function rowStyle(row, index) {
+	    var classes = ['active', 'success', 'info', 'warning', 'danger'];
+	    if (row.master === '部门') {
+	        return {
+	            classes: classes[2]
+	        };
+	    }
+	    return {};
+	}
+
+	$("#getbar").click(function(){
+		document.getElementById('bar').style.display='block';
+		document.getElementById("results").style.display="none"
+
+	})
+
+
+	$("#getresault").click(function(){
+
+		var termPhase=document.getElementById("phaseSec").value
+		var termDate=document.getElementById("dateSec").value
+		if(termDate=="" && termPhase=="")
+			alert("月份和期数不能同时为空");	
+		else
+		{			
+			$.ajax({
+				url: '/sys/getresult',
+				type: 'post',
+				data: {termPhase: termPhase,termDate: termDate},
+				dataType: 'json',
+				success: function(data){										
+					var scores=eval("("+data["scores"]+")");			
+					document.getElementById("results").style.display="block"
+						$(function () {														
+						    $('#depart_result').bootstrapTable('destroy').bootstrapTable({
+						        data: scores
+						    });					    						
+
+						});
+						
+					// 构造echarts参数
+					document.getElementById("bar").style.display="none";
+					document.getElementById("getbar").disabled=false;
+					var departs=new Array();
+					var departsScore=new Array();
+					var j=0
+					for(var i=0;i<scores.length;i++)
+					{
+						if(scores[i]['department']!='-')
+							{
+								departs[j]=scores[i]['department'];
+								departsScore[j]=scores[i]['score'];
+								j++;
+							}
+					}
+					getBar(departs,departsScore);
+
+				},
+				error: function(xhr){
+					alert("error");
+				}
+			})	
+		}		
+	})
+
+	function getBar(x,y){
+		var myChart = echarts.init(document.getElementById('bar'));
+		var option = {
+			            title: {
+			                text: '各部门分数排行榜'
+			            },
+			            tooltip : {
+					        trigger: 'axis'
+					    },
+			            legend: {
+			                data:['分数排行']
+			            },
+			             toolbox: {
+					        show : true,
+					        feature : {
+					            dataView : {show: true, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    calculable : true,
+			            xAxis: {
+			                
+			            },
+			            yAxis: {
+							data: x
+			            }
+			            ,
+			            series: [{
+			                name: '分数',
+			                type: 'bar',
+			                data: y,
+			                
+				            markLine : {
+				                data : [
+				                    {type : 'average', name: '平均值'}
+				                ]
+				            }
+			            }]
+			        };
+		myChart.setOption(option); 
+		window.onresize = myChart.resize
+	}
+
+	 
+	function getDetail(TypeId){
+		
+		var termPhase=document.getElementById("phaseSec").value
+		// var termDate=document.getElementById("dateSec").value
+		// alert(TypeId);
+		var id= TypeId.replace(/[^0-9]/ig,""); 
+		if(TypeId.indexOf("ment") > 0)
+			{
+				var postdata={termPhase: termPhase,departID: id};
+			}
+		else
+			{
+				var postdata={termPhase: termPhase,masterID: id};
+			}
+		// alert(id);
+		$.ajax({
+			url: '/sys/detail',
+			type:'post',
+			data:postdata,
+			dataType:'json',
+			success: function(data){
+				var employeelist=eval("("+data["employees"]+")");				
+			    document.getElementById('light').style.display='block';
+			    document.getElementById('fade').style.display='block';
+				$(function () {														
+				    $('#employee_list').bootstrapTable('destroy').bootstrapTable({
+				        data: employeelist
+				    });	 
+				});
+			},
+			error: function(xhr){
+					alert("error");
+				}
+		})
+	}
+
+ //根据月份获得期数
+ 	function getTerm(){
+ 		var date=document.getElementById('dateSec').value;
+ 		var phase=document.getElementById("phaseSec");
+
+ 		$.ajax({
+ 			url:'/sys/getterm',
+ 			type:'post',
+ 			data:{date: date},
+ 			success: function(data){ 				
+ 				// alert(1);
+ 				
+ 				phase.options.length=1;
+ 				for(var i=0;i<data.length;i++)
+ 				{ 			 							
+ 					var option=document.createElement("option");
+ 					phase.appendChild(option);
+ 					option.text=data[i]["phase"];
+ 					option.value=data[i]["phase"].replace(/[^0-9]+/g, '');
+ 				}
+
+ 				// terms=data.length;
+ 				 
+
+ 			},
+ 			error: function(xhr){
+ 				alert("error"+xhr);
+ 			}
+
+ 		})
+ 	}
+	
+	
+</script>
+
+<div id="light" class="white_content"> 
+	<div align="right">
+		<span id="span2" style="cursor:pointer" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">×</span>
+	</div>
+	<div >
+		<table id="employee_list"  data-search="true">	 
+			<thead>
+			<tr>
+			    <th data-field="id">id</th>	        
+			    <th data-field="name">评分人姓名</th>	
+			    <th data-field="score">所给分数</th>     
+			</tr>
+			</thead>
+		</table>
+	</div>
+</div> 
+
+
+<div id="fade" class="black_overlay"> </div>

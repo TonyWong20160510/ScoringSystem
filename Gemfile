@@ -8,8 +8,7 @@ gem 'rails', '3.2.13'
 gem 'mysql'
 gem 'mysql2', "~> 0.3.10"
 gem 'puma'
-
-
+gem 'mina'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do

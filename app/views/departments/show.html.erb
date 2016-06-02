@@ -1,0 +1,6 @@
+<h1><%= @department.name %></h1>
+
+部门主管人数：<%= @department.masters.count %><br />
+部门员工人数：<%= @department.employees.count %><br />
+<br /><br />
+<%= link_to '编辑', edit_department_path(@department) %>
