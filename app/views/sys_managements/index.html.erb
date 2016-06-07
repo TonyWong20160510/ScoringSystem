@@ -4,7 +4,6 @@
 <h1>欢迎来到易百事内部评分系统</h1>
 
 <div>	
-<<<<<<< HEAD
 	<div class="form-group">
 		<input type="button" class="btn btn-large btn-success" id="opensystem" value="创建评分记录">
 	</div>
@@ -14,10 +13,7 @@
 	<div class="form-group">
 		<input type="button" class="btn btn-large btn-primary" id="peopleinfo" value="系统人员管理" onclick="javascript:window.location.href='/sys/info'">
 	</div>
-=======
-	<input type="button" class="btn btn-large btn-success" id="opensystem" value="创建新记录">
-	<input type="button" class="btn btn-large btn-info" id="result" value="查看结果" onclick="javascript:window.location.href='/sys/result'">
->>>>>>> cfb032bdea0fe45ee5638ec599dff75331eff213
+
 	<script type="text/javascript">
 	$("#opensystem").click(function(){
 		$.ajax({
@@ -36,21 +32,5 @@
 	  })
 	})
 
-
-	// $("#getresult").click(function(){
-	// 	$.ajax({
-	// 		url: 'sys/result',
-	// 		type: 'post',
-	// 		dataType: 'json',
-	// 		success: function(xhr){
-	// 			alert(xhr["depart"]["1"]);
-	// 			alert("success");
-	// 		},
-	// 		error: function(xhr){
-	// 			alert("error");
-	// 		}
-
-	// 	})
-	// })
 	</script>
 </div>
