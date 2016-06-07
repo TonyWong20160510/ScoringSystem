@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ScoringSystem::Application.routes.draw do  
   resources :departments
   resources :admins

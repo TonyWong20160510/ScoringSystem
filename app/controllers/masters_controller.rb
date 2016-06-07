@@ -40,10 +40,11 @@ class MastersController < EmployeesController
 		  	else
 		  	  flash[:success]="Profile updated"
 		      # redirect_to @master
-		      render js: "更新成功"
+		      # render js: "更新成功"
+		      redirect_to '/'
 		    end
 	    else
-	      render 'edit'
+	      redirect_to '/'
 	    end
 	end
 

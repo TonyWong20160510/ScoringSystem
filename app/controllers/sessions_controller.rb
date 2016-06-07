@@ -1,6 +1,7 @@
 class SessionsController < ApplicationController	
 	def create
-		employee = Employee.find_by_mobile(params[:session][:mobile])
+		# employee = Employee.find_by_mobile(params[:session][:mobile])
+		employee = Employee.find_by_name(params[:session][:name])
 		if employee && employee.authenticate(params[:session][:password])
 			# session[:employee_id]=employee.id
 			sign_in(employee)

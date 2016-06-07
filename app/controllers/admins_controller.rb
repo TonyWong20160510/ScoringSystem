@@ -33,7 +33,7 @@ class AdminsController < EmployeesController
 
 	def update
 		@admin = Admin.find(params[:id])
-		if @admin.update_attributes(params[:employee])
+		if @admin.update_attributes(params[:admin])
 			 #do something
 			if admin?			 	
 		      flash[:success] = "Profile updated"
