@@ -2,6 +2,7 @@ class Department < ActiveRecord::Base
   attr_accessible :name
   has_many :masters
   has_many :employees
+
   has_many :department_masks
 
   #返回当前主管某期平均分(phase:20160520)

@@ -93,6 +93,7 @@ class SysManagementsController < ApplicationController
 		respond_to do |format|
 			format.json {render json: {:scores=>@scores.to_json}}
 		end
+
 	end
 
 	def detail

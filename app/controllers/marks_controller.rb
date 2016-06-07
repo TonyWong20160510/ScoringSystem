@@ -5,6 +5,7 @@ class MarksController < ApplicationController
 	def index	
 		 phase=Time.now.strftime("%Y%m%d")	
 		 # 判定当天是否可以进行评分 		 
+
 		 isopen=Term.find_by_sql("select * from terms where phase='#{phase}期'")
 		 if isopen.count>0
 			 # @marks=Mark.all		 
@@ -25,7 +26,9 @@ class MarksController < ApplicationController
 
 	def submit
 		phase=Time.now.strftime("%Y%m%d")	 
+
 		check=Mark.find_by_sql("select * from marks where term_phase='#{phase}' and employee_id=#{current_employee["id"]}",)
+
 
 		if check.count > 0
 			render text: "您已经提交过评分了!"
@@ -42,6 +45,7 @@ class MarksController < ApplicationController
 				# sql=ActiveRecord::Base.connection() 需要传入参数的存储过程在这里好像行不通，总是提示不能返回结果集，不知道是rails问题还是我写的格式问题
 				# @result=sql.select_value("call SUBMIT_MARKS("+master_id+","+employee_id+","+department_id+",'"+term_phase+"','"+master_score+"','"+department_score+"')")
 		    end		  
+
 		end			
 	end
 

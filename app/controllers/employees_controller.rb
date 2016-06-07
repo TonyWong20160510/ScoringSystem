@@ -1,6 +1,7 @@
 class EmployeesController < ApplicationController
 	 before_filter :authorize
 	 before_filter :isAdmin, only:[:new, :create]
+
   	 # before_filter :correct_user, only:[:edit, :update]
 	def show
 		@employee = Employee.find(params[:id])
@@ -46,5 +47,16 @@ class EmployeesController < ApplicationController
 	    end
 	end
 
+	
+	private
+    
+    #before filters
+    def signed_in_employee
+      redirect_to signin_url, notice: "Please sign in." unless sign_in?
+    end
 
+    def correct_employee
+      @employee = Employee.find(params[:id])
+      redirect_to(root_path) unless current_employee?(@employee)
+    end    
 end

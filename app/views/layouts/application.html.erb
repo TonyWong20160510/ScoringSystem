@@ -53,16 +53,14 @@
         <a class="navbar-brand" href="#">KID-评分系统</a>
         <div class="navbar-collapse collapse navbar-responsive-collapse">
           <ul class="nav navbar-nav">
-            <li><%= link_to "首页", root_path  %></li>            
-            
+            <li><%= link_to "首页", root_path  %></li>                        
             <% if sign_in? %>
               <% if admin? %>
               <li id="fat-menu" class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     你好,【<%= current_employee["name"] %>】<span class="caret"></span>
                   </a>
-                  <ul class="dropdown-menu">
-                      
+                  <ul class="dropdown-menu">                      
                       <li><%= link_to "编辑资料", edit_employee_path(current_employee) %></li>
                       <li><%= link_to "开始打分", '/mark' %></li>
                       <li class="divider"></li>

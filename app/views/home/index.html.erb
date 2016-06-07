@@ -52,8 +52,10 @@
     <td>10分</td>
   </tr>
 </table>
-<% unless @current_employee %>
-  <div><%= link_to "登录系统", signin_path, class: "btn btn-large btn-primary" %></div>
+<% unless sign_in? %>
+<div>
+<%= link_to "登录系统", signin_path, class: "btn btn-large btn-primary" %>
+</div>
 <% end %>
 </div>
 
