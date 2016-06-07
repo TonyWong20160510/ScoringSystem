@@ -1,5 +1,4 @@
-class SessionsController < ApplicationController
-	
+class SessionsController < ApplicationController	
 	def create
 		employee = Employee.find_by_mobile(params[:session][:mobile])
 		if employee && employee.authenticate(params[:session][:password])

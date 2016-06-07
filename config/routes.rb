@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ScoringSystem::Application.routes.draw do  
   resources :departments
   resources :admins
@@ -14,6 +15,7 @@ ScoringSystem::Application.routes.draw do
   match '/sys/result' => 'SysManagements#show'
   match '/sys/getresult' => 'SysManagements#result'
   match '/sys/detail'=>'SysManagements#detail'
+
   match '/sys/getterm'=>'SysManagements#getterm'
   match '/sys/info'=>'SysManagements#info'
   match '/sys/signup' => 'Employees#new'
@@ -30,8 +32,6 @@ ScoringSystem::Application.routes.draw do
   match '/mark' => 'Marks#index'
   match '/mark/submit' => 'Marks#submit'
   match '/mark/score' => 'Marks#score'
-
-  
 
 
   # The priority is based upon order of creation:
